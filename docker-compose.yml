@@ -1,0 +1,66 @@
+version: '3'
+
+volumes:
+  data_geoserver:
+  db_data_postgis:
+
+services:
+
+  dnsmasq:
+    image: andyshinn/dnsmasq:2.76
+    command: --log-facility=- --server=127.0.0.11 --neg-ttl=3600 --cache-size=1000 --max-cache-ttl=3600 --min-cache-ttl=3600
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 172.17.0.1:53:53/tcp
+      - 172.17.0.1:53:53/udp
+    external_links:
+      - proxy:test.infrabas.se
+    depends_on:
+      - proxy
+
+  proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+ #     - ./certs:/etc/nginx/certs:ro
+      - ./nginx-proxy.conf:/etc/nginx/conf.d/nginx-proxy.conf
+    depends_on:
+      - webserver
+
+  webserver:
+    image: nginx:alpine
+    environment:
+      - VIRTUAL_HOST=test.infrabas.se
+    volumes:
+      - ./app.conf:/etc/nginx/conf.d/app.conf:ro
+      - ./index.html:/etc/nginx/html/index.html
+    depends_on:
+      - geoserver
+
+  postgis:
+    image: mdillon/postgis:9.6-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - db_data_postgis:/var/lib/postgresql/data
+      - ./postgis/pg_hba.conf:/etc/pg_hba.conf:ro
+      - ./postgis/layersdb.sql:/docker-entrypoint-initdb.d/layersdb.sql
+
+  geoserver:
+    image: bioatlas/geoserver-test:latest
+    environment:
+      - USERNAME=admin
+      - PASS=geoserver
+      - GEOSERVER_URL=http://test.infrabas.se/geoserver
+    volumes:
+      - data_geoserver:/opt/geoserver/data_dir
+
+
+
