@@ -1,5 +1,10 @@
-geoserver-docker
-================
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+# geoserver-docker
 
 This project holds a dockerized service composition with geoserver and postgis. Here is an overview of this system:
 
@@ -11,8 +16,7 @@ This system can run on a development server, such as on a developer's laptop, wh
 
 This rest of this intro will now describe how to deploy the same system on a production server.
 
-Setting up a server in SUNET Cloud (SafeSpring Compute)
-=======================================================
+# Setting up a server in SUNET Cloud (SafeSpring Compute)
 
 We start from scratch by provisioning a server in the Open Stack-based SUNET Compute Cloud (SafeSpring).
 
@@ -22,12 +26,11 @@ First install the python openstackclient
 
     apt install python-openstackclient
 
-From the CLI you can then set up environment variables to connect - by sourcing a file from the openstack portal at <https://dashboard.cloud.sunet.se/project/access_and_security/api_access/openrc/>
+From the CLI you can then set up environment variables to connect - by sourcing a file from the openstack portal at https://dashboard.cloud.sunet.se/project/access_and_security/api_access/openrc/
 
     source ~/Downloads/bas-infra1.nrm.se-openrc.sh
 
-Manage Open Stack from the CLI
-------------------------------
+## Manage Open Stack from the CLI
 
 You can now issue commands from the command line, such as:
 
@@ -37,10 +40,9 @@ You can now issue commands from the command line, such as:
     openstack image list
     openstack security group list
 
-Install Docker Machine and provision a box
-------------------------------------------
+## Install Docker Machine and provision a box
 
-First install docker-machine from <https://github.com/docker/machine/releases>.
+First install docker-machine from https://github.com/docker/machine/releases.
 
 Make sure that open stack allows traffic from the docker daemon by adding TCP 2377 and TCP 2376 to security group "bioatlas-default".
 
@@ -65,8 +67,7 @@ To upgrade and login to the box above, use....
     docker-machine upgrade test-geoserver
     docker-machine ssh test-geoserver
 
-Production deployment
----------------------
+## Production deployment
 
 We need to treat the production environment different from a laptop-based development server.
 
@@ -79,7 +80,7 @@ For example, we need to have a firewall, set up DNS, SSL, review credentials use
     sudo ufw allow http
     sudo ufw enable
     sudo ufw status
-
+    
 ### Set up DNS
 
 The `dnsmasq` component used on the development server doesn't need to run in production. Instead, to set up DNS, go to Loopia or equiv registrar and add "test.infrabas.se" as a subdomain with a DNS A entry pointing to the public ip that you get from the `docker-machine ip test-geoserver` command.
@@ -99,7 +100,7 @@ Make sure you have `docker-compose`:
     sudo apt install python-pip
     sudo pip install docker-compose    
 
-Also make sure you can run docker and docker-compose [with your user without having to use sudo](https://stackoverflow.com/questions/21871479/docker-cant-connect-to-docker-daemon/33596140#33596140):
+Also make sure you can run docker and docker-compose [with your user without having to use  sudo](https://stackoverflow.com/questions/21871479/docker-cant-connect-to-docker-daemon/33596140#33596140):
 
     sudo groupadd docker
     sudo usermod -aG docker $(whoami)
@@ -127,11 +128,13 @@ While logged in on the host, build and start the system:
 
 Note that starting the geoserver for the first time takes considerable time, approx 300 s.
 
-Backup and restore
-------------------
+## Backup and restore
 
 On the host, add a crontab entry for making backups:
 
     45 4 * * * bash -c 'cd /home/ubuntu/repos/geoserver-docker && make backup'
-
+    
 Also verify that the Makefile restore target works.
+
+
+

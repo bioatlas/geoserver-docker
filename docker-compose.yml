@@ -43,11 +43,7 @@ services:
 
   postgis:
     image: mdillon/postgis:9.6-alpine
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    env_file: .env
     volumes:
       - db_data_postgis:/var/lib/postgresql/data
       - ./postgis/pg_hba.conf:/etc/pg_hba.conf:ro
@@ -55,10 +51,7 @@ services:
 
   geoserver:
     image: bioatlas/geoserver-test:latest
-    environment:
-      - USERNAME=admin
-      - PASS=geoserver
-      - GEOSERVER_URL=http://test.infrabas.se/geoserver
+    env_file: .env
     volumes:
       - data_geoserver:/opt/geoserver/data_dir
 
