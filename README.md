@@ -68,7 +68,7 @@ To upgrade and login to the box above, use....
 Production deployment
 ---------------------
 
-We need to treat the production environment different from a laptop-based development server.
+We need to treat the production environment differently from a laptop-based development server.
 
 For example, we need to have a firewall, set up DNS, SSL, review credentials used and set up backup/restore.
 
@@ -76,7 +76,7 @@ For example, we need to have a firewall, set up DNS, SSL, review credentials use
 
     sudo ufw allow OpenSSH
     sudo ufw allow http
-    sudo ufw allow http
+    sudo ufw allow https
     sudo ufw enable
     sudo ufw status
 
@@ -125,7 +125,7 @@ While logged in on the host, build and start the system:
     make build
     make up
 
-Note that starting the geoserver for the first time takes considerable time, approx 300 s.
+Note that starting the geoserver for the first time takes considerable time, several minutes.
 
 Backup and restore
 ------------------
